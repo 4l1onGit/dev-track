@@ -1,6 +1,7 @@
 import React from "react";
 import HomePanel from "./HomePanel";
 import SkillsCard from "./SkillsCard";
+import Link from "next/link";
 
 const fakeSkills = [
   {
@@ -8,30 +9,35 @@ const fakeSkills = [
     progress: 90,
     confidence: "High",
     lastUpdated: "3 months ago",
+    skillLevel: "Advanced",
   },
   {
     name: "React",
     progress: 20,
     confidence: "Medium",
     lastUpdated: "2 months ago",
+    skillLevel: "Beginner",
   },
   {
     name: "Node.js",
     progress: 70,
     confidence: "Medium",
     lastUpdated: "1 month ago",
+    skillLevel: "Intermediate",
   },
   {
     name: "Python",
     progress: 50,
     confidence: "High",
     lastUpdated: "2 weeks ago",
+    skillLevel: "Intermediate",
   },
   {
     name: "CSS",
     progress: 80,
     confidence: "High",
     lastUpdated: "1 week ago",
+    skillLevel: "Advanced",
   },
 ];
 
@@ -44,9 +50,12 @@ const RecentSkillsPanel = () => {
           <span className="rounded-2xl bg-gray-700 h-10 w-20 flex items-center justify-center text-gray-300 font-semibold">
             23
           </span>
-          <button className="bg-indigo-700 text-gray-300 px-4 py-2 rounded-2xl hover:bg-indigo-600 transition-colors font-extrabold">
+          <Link
+            href="/skills/new"
+            className="bg-indigo-700 text-gray-300 px-4 py-2 rounded-2xl hover:bg-indigo-600 transition-colors font-extrabold"
+          >
             +
-          </button>
+          </Link>
         </div>
       </div>
       <div id="skillsContainer" className="">
@@ -58,12 +67,13 @@ const RecentSkillsPanel = () => {
               lastUpdated={skill.lastUpdated}
               name={skill.name}
               progress={skill.progress}
+              skillLevel={skill.skillLevel}
             />
           ))}
         </ul>
       </div>
       <div id="pagination" className="py-2">
-        <div className="flex justify-center items-center space-x-2 py-4">
+        <div className="flex justify-evenly items-center space-x-2 py-4">
           <button className="bg-gray-700 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
             Previous
           </button>
