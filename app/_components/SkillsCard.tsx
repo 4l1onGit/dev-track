@@ -5,7 +5,7 @@ interface SkillsCardProps {
   name: string;
   progress: number;
   confidence: string;
-  lastUpdated: string;
+  lastUpdated: Date;
   skillLevel: string;
 }
 
@@ -38,7 +38,9 @@ const SkillsCard = ({
           >
             {skillLevel}
           </span>
-          <span className="ml-auto text-xs text-gray-400">{lastUpdated}</span>
+          <span className="ml-auto text-xs text-gray-400">
+            {String(lastUpdated)}
+          </span>
         </div>
       </div>
       <div className="flex flex-col space-y-2">

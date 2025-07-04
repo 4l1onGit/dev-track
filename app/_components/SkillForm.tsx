@@ -1,54 +1,59 @@
 "use client";
+import { Category, Confidence, Skill, SkillLevel } from "@prisma/client";
 import React, { useState } from "react";
+import { addUserSkill } from "../_actions/skillsActions";
 
-type formDataType = {
-  skillName: string | null;
-  skillLevel: string | null;
-  skillDescription: string | null;
-  skillTags: string | null;
-  startDate: string | null;
-  endDate: string | null;
-  confidence: string | null;
-  progress: string | null;
-};
-
-const initialFormData: formDataType = {
-  skillName: null,
-  skillLevel: null,
-  skillDescription: null,
-  skillTags: null,
-  startDate: null,
-  endDate: null,
-  confidence: null,
-  progress: null,
+const initialFormData: Skill = {
+  name: "",
+  skillLevel: SkillLevel.Beginner,
+  description: "",
+  tags: [],
+  createdAt: new Date(),
+  lastUpdated: new Date(),
+  confidence: Confidence.Low,
+  progress: 0,
+  category: Category.Other,
 };
 
 const SkillForm = () => {
   // Handle form submission
-  const [formData, setFormData] = useState<formDataType>(initialFormData);
+  const [formData, setFormData] = useState<Skill>(initialFormData);
+  const [tag, setTag] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log(formData);
-    // Here you can handle the skill data, e.g., send it to an API or update state
+  const handleTagsChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.key === "Enter" || e.key === ",") && tag.trim()) {
+      e.preventDefault();
+      if (!formData.tags.includes(tag.trim())) {
+        setFormData({
+          ...formData,
+          tags: [...(formData.tags || []), tag.trim()],
+        });
+      }
+      setTag("");
+    }
+    if (e.key === "Backspace" && !tag && formData.tags.length > 0) {
+      setFormData({
+        ...formData,
+        tags: formData.tags?.slice(0, -1) || [],
+      });
+    }
   };
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form action={addUserSkill}>
       <div className="mb-4">
         <label
-          htmlFor="skillName"
+          htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
           Skill Name
         </label>
         <input
           type="text"
-          id="skillName"
-          value={formData.skillName || ""}
-          onChange={(e) =>
-            setFormData({ ...formData, skillName: e.target.value })
-          }
-          name="skillName"
+          id="name"
+          value={formData.name || ""}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          name="name"
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10 bg-gray-700 p-2"
           placeholder="Enter skill name"
           required
@@ -66,17 +71,22 @@ const SkillForm = () => {
             <select
               id="skillLevel"
               name="skillLevel"
-              value={formData.skillLevel || ""}
+              value={formData.skillLevel || SkillLevel.Beginner}
               onChange={(e) =>
-                setFormData({ ...formData, skillLevel: e.target.value })
+                setFormData({
+                  ...formData,
+                  skillLevel: e.target.value as SkillLevel,
+                })
               }
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10 bg-gray-700 p-2"
               required
             >
-              <option value="">Select level</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <option>Select level</option>
+              <option value={SkillLevel.Beginner}>{SkillLevel.Beginner}</option>
+              <option value={SkillLevel.Intermediate}>
+                {SkillLevel.Intermediate}
+              </option>
+              <option value={SkillLevel.Advanced}>{SkillLevel.Advanced}</option>
             </select>
           </div>
           <div className="">
@@ -89,17 +99,20 @@ const SkillForm = () => {
             <select
               id="confidence"
               name="confidence"
-              value={formData.confidence || ""}
+              value={formData.confidence || Confidence.Low}
               onChange={(e) =>
-                setFormData({ ...formData, confidence: e.target.value })
+                setFormData({
+                  ...formData,
+                  confidence: e.target.value as Confidence,
+                })
               }
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10 bg-gray-700 p-2"
               required
             >
-              <option value="">Select level</option>
-              <option value="unconfident">Unconfident</option>
-              <option value="okay">Getting there</option>
-              <option value="confident">Confident</option>
+              <option>Select level</option>
+              <option value={Confidence.Low}>{Confidence.Low}</option>
+              <option value={Confidence.Medium}>{Confidence.Medium}</option>
+              <option value={Confidence.High}>{Confidence.High}</option>
             </select>
           </div>
           <div className="w-[36%]">
@@ -111,12 +124,17 @@ const SkillForm = () => {
             </label>
             <div className="flex">
               <input
-                type="text"
+                type="number"
                 id="progress"
                 name="progress"
-                value={formData.progress || ""}
+                min={0}
+                max={100}
+                value={Number(formData.progress)}
                 onChange={(e) =>
-                  setFormData({ ...formData, progress: e.target.value })
+                  setFormData({
+                    ...formData,
+                    progress: e.target.valueAsNumber!,
+                  })
                 }
                 className="mt-1 block w-full border-gray-300 rounded-l-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10 bg-gray-700 p-2"
                 placeholder="Enter progress"
@@ -139,9 +157,9 @@ const SkillForm = () => {
           id="skillDescription"
           name="skillDescription"
           rows={3}
-          value={formData.skillDescription || ""}
+          value={formData.description || ""}
           onChange={(e) =>
-            setFormData({ ...formData, skillDescription: e.target.value })
+            setFormData({ ...formData, description: e.target.value })
           }
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-700 p-2"
           placeholder="Enter skill description"
@@ -152,57 +170,60 @@ const SkillForm = () => {
           htmlFor="skillTags"
           className="block text-sm font-medium text-gray-700"
         >
-          Tags
+          <div className="flex space-x-2 items-center py-2">
+            <span>Tags</span>
+            <div className="flex space-x-2">
+              {formData.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="bg-gray-400 px-2 rounded-xl text-gray-800"
+                >
+                  {tag} <span className="text-gray-950">x</span>
+                </span>
+              ))}
+            </div>
+          </div>
         </label>
         <input
           type="text"
-          id="skillTags"
-          name="skillTags"
-          value={formData.skillTags || ""}
-          onChange={(e) =>
-            setFormData({ ...formData, skillTags: e.target.value })
-          }
+          id="tags"
+          name="tags"
+          value={tag || ""}
+          onKeyDown={(e) => handleTagsChange(e)}
+          onChange={(e) => setTag(e.target.value)}
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10 bg-gray-700 p-2"
           placeholder="Enter tags (comma separated)"
         />
       </div>
-      <div className="mb-4">
+      <div className="pb-4">
         <label
-          htmlFor="startDate"
+          htmlFor="category"
           className="block text-sm font-medium text-gray-700"
         >
-          Start Date
+          Category
         </label>
-        <input
-          type="datetime-local"
-          id="startDate"
-          name="startDate"
-          value={formData.startDate || ""}
+        <select
+          id="category"
+          name="category"
+          value={formData.category || Category.Other}
           onChange={(e) =>
-            setFormData({ ...formData, startDate: e.target.value })
+            setFormData({
+              ...formData,
+              category: e.target.value as Category,
+            })
           }
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10 bg-gray-700 p-2"
           required
-        />
-      </div>
-      <div className="mb-4">
-        <label
-          htmlFor="endDate"
-          className="block text-sm font-medium text-gray-700"
         >
-          Estimated End Date
-        </label>
-        <input
-          type="datetime-local"
-          id="endDate"
-          name="endDate"
-          value={formData.endDate || ""}
-          onChange={(e) =>
-            setFormData({ ...formData, endDate: e.target.value })
-          }
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm h-10 bg-gray-700 p-2"
-          required
-        />
+          <option>Select level</option>
+          <option value={Category.Backend}>{Category.Backend}</option>
+          <option value={Category.Frontend}>{Category.Frontend}</option>
+          <option value={Category.DevOps}>{Category.DevOps}</option>
+          <option value={Category.Mobile}>{Category.Mobile}</option>
+          <option value={Category.SoftSkill}>{Category.SoftSkill}</option>
+          <option value={Category.Tooling}>{Category.Tooling}</option>
+          <option value={Category.Other}>{Category.Other}</option>
+        </select>
       </div>
       <button
         type="submit"

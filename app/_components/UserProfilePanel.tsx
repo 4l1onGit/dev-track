@@ -1,8 +1,10 @@
 import React from "react";
 import HomePanel from "./HomePanel";
 import Image from "next/image";
+import { auth } from "../_lib/auth/auth";
 
-const UserProfilePanel = () => {
+const UserProfilePanel = async () => {
+  const session = await auth();
   return (
     <HomePanel className={`h-1/2 flex flex-col justify-center space-y-4`}>
       <h2 className="text-3xl text-gray-300 pt-4 px-4">Hey Bob, Welcome</h2>
@@ -13,7 +15,7 @@ const UserProfilePanel = () => {
             <div className="relative h-10 w-10">
               <Image
                 alt="User Avatar"
-                src="/images/user-avatar.png"
+                src={session!.user!.image!}
                 fill
                 className="w-1/3 absolute rounded-lg shadow-md"
                 style={{
