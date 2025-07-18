@@ -1,13 +1,19 @@
-import React from "react";
-import HomePanel from "./HomePanel";
-import Image from "next/image";
-import { auth } from "../_lib/auth/auth";
+import React from 'react';
+import HomePanel from './HomePanel';
+import Image from 'next/image';
+import { auth } from '../_lib/auth/auth';
+import { getUserSkills } from '../_actions/skillsActions';
+import { getUserNotes } from '../_actions/notesActions';
 
 const UserProfilePanel = async () => {
   const session = await auth();
+  const skills = await getUserSkills();
+  const notes = await getUserNotes();
   return (
     <HomePanel className={`h-1/2 flex flex-col justify-center space-y-4`}>
-      <h2 className="text-3xl text-gray-300 pt-4 px-4">Hey Bob, Welcome</h2>
+      <h2 className="text-3xl text-gray-300 pt-4 px-4">
+        Hey {session?.user?.name?.split(' ')[0]}, Welcome
+      </h2>
       <div className="flex justify-between w-full">
         <div className="w-2/3 p-4 rounded-lg">
           <div className="flex justify-between">
@@ -19,7 +25,7 @@ const UserProfilePanel = async () => {
                 fill
                 className="w-1/3 absolute rounded-lg shadow-md"
                 style={{
-                  objectFit: "cover",
+                  objectFit: 'cover',
                 }}
               />
             </div>
@@ -60,11 +66,11 @@ const UserProfilePanel = async () => {
           <ul className="space-y-2">
             <li className="flex justify-between text-gray-300">
               <span>Total Notes</span>
-              <span>42</span>
+              <span>{notes.length}</span>
             </li>
             <li className="flex justify-between text-gray-300">
               <span>Total Skills</span>
-              <span>15</span>
+              <span>{skills.length}</span>
             </li>
             <li className="flex justify-between text-gray-300">
               <span>Last Active</span>

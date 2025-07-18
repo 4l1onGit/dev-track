@@ -1,8 +1,12 @@
-import React from "react";
-import HomePanel from "./HomePanel";
-import SkillsCard from "./SkillsCard";
-import Link from "next/link";
-import { getUserSkills } from "../_actions/skillsActions";
+import React from 'react';
+import HomePanel from './HomePanel';
+import SkillsCard from './SkillsCard';
+import Link from 'next/link';
+import { getUserSkills } from '../_actions/skillsActions';
+import { NextRequest } from 'next/server';
+import { SearchParams } from 'next/dist/server/request/search-params';
+import Pagination from './Pagination';
+import SkillsList from './SkillsList';
 
 // const fakeSkills = [
 //   {
@@ -42,15 +46,25 @@ import { getUserSkills } from "../_actions/skillsActions";
 //   },
 // ];
 
-const RecentSkillsPanel = async () => {
-  const skills = await getUserSkills();
+const RecentSkillsPanel = async ({
+  page,
+  record,
+}: {
+  page: number;
+  record: number;
+}) => {
+  const { skills, total } = await getUserSkills(
+    page as number,
+    record as number
+  );
+
   return (
     <HomePanel className={`flex flex-col h-full`}>
       <div className="flex justify-between items-center px-1">
         <h2 className="text-4xl px-1 py-14">Recently added skills</h2>
         <div className="flex justify-between space-x-2">
           <span className="rounded-2xl bg-gray-700 h-10 w-20 flex items-center justify-center text-gray-300 font-semibold">
-            23
+            {total}
           </span>
           <Link
             href="/skills/new"
@@ -61,34 +75,9 @@ const RecentSkillsPanel = async () => {
         </div>
       </div>
       <div id="skillsContainer" className="flex-1 overflow-y-auto px-4">
-        <ul className="flex flex-col space-y-6">
-          {skills.length > 0 ? (
-            skills.map((skill, index) => (
-              <SkillsCard
-                key={String(index) + skill.name}
-                confidence={skill.confidence}
-                lastUpdated={skill.lastUpdated}
-                name={skill.name}
-                progress={skill.progress}
-                skillLevel={skill.skillLevel}
-              />
-            ))
-          ) : (
-            <span className="text-center">No User Skills Found</span>
-          )}
-        </ul>
+        <SkillsList skills={skills} />
       </div>
-      <div id="pagination" className="py-2 h-20">
-        <div className="flex justify-evenly items-center space-x-2 py-4">
-          <button className="bg-gray-700 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
-            Previous
-          </button>
-          <span className="text-gray-300">Page 1 of 10</span>
-          <button className="bg-gray-700 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
-            Next
-          </button>
-        </div>
-      </div>
+      <Pagination pageParam={page || 1} total={total} record={record} />
     </HomePanel>
   );
 };

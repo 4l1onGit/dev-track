@@ -1,18 +1,49 @@
 "use server";
-import { prisma } from "@/prisma/prisma"
+import { prisma } from "@/prisma/prisma";
+import { Category, Confidence, SkillLevel } from "@prisma/client";
 import { auth } from "../_lib/auth/auth";
-import { Category, Confidence, Skill, SkillLevel } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 
 
-export const getUserSkills = async () => {
+export const getUserSkills = async (page = 0, records = 5) => {
     const session = await auth();
+
+      if (!session?.user?.id) {
+    throw new Error("User not authenticated");
+  }
+
+
     const skills = await prisma.skill.findMany({
   where: {
-    userId: session?.user?.id, // or whatever your user ID variable is
+    userId: session?.user?.id,
   },
+  skip: page * records,
+  take: records,
+  orderBy: { 
+    createdAt: 'desc'
+  }
 });
-    return skills;
+
+  const total = await prisma.skill.count({
+  where: { userId: session?.user?.id },
+});
+
+
+
+    return {skills, total } ;
+}
+
+export const getUserSkill = async (id: string) => {
+   const session = await auth();
+   const skill = await prisma.skill.findFirst({
+    where: {
+      id: id,
+      userId: session!.user!.id,
+    }
+   })
+   return skill;
 }
 
 export const addUserSkill = async (formData : any) => {
@@ -36,9 +67,14 @@ export const addUserSkill = async (formData : any) => {
     }   
    
   },
+  
 );
-
+if(newSkill) {
+ redirect("/")
+}
+ 
 } else {
     throw new Error("Must be authenticated");
 } 
+
 }
