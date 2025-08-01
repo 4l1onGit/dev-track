@@ -7,5 +7,7 @@ export const authOptions = {
   providers: [
     GitHub
   ],
-
+  pages: {
+    signIn: '/login',
+  }
 }
