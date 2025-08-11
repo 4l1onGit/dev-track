@@ -17,12 +17,55 @@ export async function getUserDetails() {
 
     const user = await prisma.user.findUnique({
         where: { id: session.user!.id },
-        select: { name: true, displayName: true, bio: true, theme: true },
+        select: { name: true, displayName: true, bio: true, theme: true, lastActive: true, streakStart: true },
     });
 
     if (!user) throw new Error("User not found");
 
     return user;
+}
+
+export async function updateUserLastActive(userId: string) {
+
+    if (!userId) throw new Error("User ID is required");
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { lastActive: new Date() },
+    });
+}
+
+export async function updateUserStreak(userId: string) {
+
+    if (!userId) throw new Error("User ID is required");
+
+    await updateUserLastActive(userId);
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { streakStart: true, lastActive: true },
+    });
+
+    if(!user) throw new Error("User not found");
+
+    if(user?.streakStart == null)  {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { streakStart: new Date() },
+        });
+    }
+
+
+    const daysBetween = Math.floor(
+        (new Date().getTime() - user.streakStart!.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if(daysBetween > 1) {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { streakStart: new Date() },
+        });
+    }
 }
 
 export async function getDisplayName() {

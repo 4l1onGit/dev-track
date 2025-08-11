@@ -12,9 +12,19 @@ import { Theme } from '@prisma/client';
 
 const UserProfilePanel = async () => {
   const session = await auth();
-  const { displayName, bio, theme } = await getUserDetails();
-  const { skills } = await getUserSkills();
-  const notes = await getUserNotes();
+  const { displayName, bio, theme, lastActive, streakStart } =
+    await getUserDetails();
+  const { total: skillsTotal } = await getUserSkills();
+  const { total: notesTotal } = await getUserNotes();
+  const streak = Math.max(
+    0,
+    Math.floor(
+      (new Date(lastActive!).setHours(0, 0, 0, 0) -
+        new Date(streakStart!).setHours(0, 0, 0, 0)) /
+        (1000 * 60 * 60 * 24)
+    )
+  );
+
   return (
     <HomePanel className={`h-1/2 flex flex-col justify-center space-y-4`}>
       <h2 className="text-3xl text-gray-300 pt-4 px-4">
@@ -71,7 +81,7 @@ const UserProfilePanel = async () => {
             </button>
           </form>
         </div>
-        <div className="w-1/3 p-4 bg-gray-800 rounded-lg">
+        <div className="w-1/2 p-4 bg-gray-800 rounded-lg">
           <h3 className="text-2xl text-gray-200 mb-4">Profile</h3>
           <ul className="space-y-2">
             <li>
@@ -79,19 +89,19 @@ const UserProfilePanel = async () => {
             </li>
             <li className="flex justify-between text-gray-300">
               <span>Total Notes</span>
-              <span>{notes.length}</span>
+              <span>{notesTotal}</span>
             </li>
             <li className="flex justify-between text-gray-300">
               <span>Total Skills</span>
-              <span>{skills.length}</span>
+              <span>{skillsTotal}</span>
             </li>
             <li className="flex justify-between text-gray-300">
               <span>Last Active</span>
-              <span>2 days ago</span>
+              <span>{String(lastActive).split(' ').slice(0, 4).join(' ')}</span>
             </li>
             <li className="flex justify-between text-gray-300">
               <span>Current Streak</span>
-              <span className="text-green-400">5 days</span>
+              <span className="text-green-400">{streak}</span>
             </li>
           </ul>
           <form className="py-4" action={updateUserTheme}>

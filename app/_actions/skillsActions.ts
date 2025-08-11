@@ -7,13 +7,22 @@ import { redirect } from "next/navigation";
 
 
 
-export const getUserSkills = async (page = 0, records = 5) => {
+export const getUserSkills = async (page = 0, records = 5, all = false) => {
     const session = await auth();
 
       if (!session?.user?.id) {
     throw new Error("User not authenticated");
   }
 
+  if (all) {
+    const skills = await prisma.skill.findMany({
+      where: {
+        userId: session?.user?.id,
+      },
+    });
+
+    return { skills };
+  }
 
     const skills = await prisma.skill.findMany({
   where: {
@@ -78,3 +87,5 @@ if(newSkill) {
 } 
 
 }
+
+

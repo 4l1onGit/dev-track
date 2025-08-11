@@ -1,8 +1,14 @@
-import React from "react";
-import HomePanel from "./HomePanel";
-import LineChart from "./LineChart";
+import React from 'react';
+import HomePanel from './HomePanel';
+import LineChart from './LineChart';
+import { getUserSkill, getUserSkills } from '../_actions/skillsActions';
 
-const ChartsPanel = () => {
+const ChartsPanel = async () => {
+  const { skills } = await getUserSkills(0, 5, true);
+  const chartData = skills.map((skill) => ({
+    date: skill.createdAt.toISOString().split(' ').splice(0, 4).join(' '),
+    value: skill.progress,
+  }));
   return (
     <HomePanel className={`h-1/2`}>
       <h2 className="text-3xl text-gray-300 p-4">X Chart showing Y</h2>
@@ -40,7 +46,7 @@ const ChartsPanel = () => {
         </div>
       </div>
       <div id="chartsContainer" className="h-52 w-full px-2">
-        <LineChart />
+        <LineChart data={chartData} />
       </div>
     </HomePanel>
   );
