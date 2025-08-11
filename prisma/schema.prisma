@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Theme {
+  Light
+  Dark
+  System
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -26,7 +32,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   // DevTracker Fields 
-  theme       String? // e.g. "light", "dark"
+  displayName String?
+  bio         String?
+  theme       Theme?    @default(System) // e.g. "light", "dark", "system"
   lastActive  DateTime? // for streak tracking
   streakStart DateTime? // optional start point
   skills      Skill[]

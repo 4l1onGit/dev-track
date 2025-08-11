@@ -1,5 +1,5 @@
-import React from "react";
-import ProgressBar from "./ProgressBar";
+import React from 'react';
+import ProgressBar from './ProgressBar';
 
 interface SkillsCardProps {
   name: string;
@@ -10,9 +10,9 @@ interface SkillsCardProps {
 }
 
 enum SkillLevel {
-  ADVANCED = "Advanced",
-  INTERMEDIATE = "Intermediate",
-  BEGINNER = "Beginner",
+  ADVANCED = 'Advanced',
+  INTERMEDIATE = 'Intermediate',
+  BEGINNER = 'Beginner',
 }
 
 const SkillsCard = ({
@@ -26,20 +26,20 @@ const SkillsCard = ({
     <li className=" bg-gradient-to-br from-indigo-800 to-indigo-600 rounded-2xl py-4 px-4 flex flex-col space-y-2">
       <div className="flex items-center justify-between">
         <span className="uppercase font-semibold">{name}</span>
-        <div className="flex space-x-2 justify-center items-center">
+        <div className="flex space-x-4 justify-evenly items-center">
           <span
             className={`${
               skillLevel === SkillLevel.BEGINNER
-                ? "bg-green-600"
+                ? 'bg-green-600'
                 : skillLevel === SkillLevel.INTERMEDIATE
-                ? "bg-amber-600"
-                : "bg-red-600"
-            } rounded-xl px-4 text-gray-200 font-bold text-sm`}
+                  ? 'bg-amber-600'
+                  : 'bg-red-600'
+            } rounded-xl px-4 text-gray-200 font-bold text-sm w-30 text-center`}
           >
             {skillLevel}
           </span>
           <span className="ml-auto text-xs text-gray-400">
-            {String(lastUpdated)}
+            {String(lastUpdated).split(' ').slice(0, 4).join(' ')}
           </span>
         </div>
       </div>
@@ -51,7 +51,7 @@ const SkillsCard = ({
           </span>
           <span className="text-xs text-gray-400">
             Confidence: {confidence}
-            {/* <span className="rounded-full h-4 w-4 bg-yellow-400"></span>{" "} */}{" "}
+            {/* <span className="rounded-full h-4 w-4 bg-yellow-400"></span>{" "} */}{' '}
             {/* Placeholder for confidence rating  */}
           </span>
         </div>

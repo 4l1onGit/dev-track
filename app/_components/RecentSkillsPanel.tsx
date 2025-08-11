@@ -53,10 +53,7 @@ const RecentSkillsPanel = async ({
   page: number;
   record: number;
 }) => {
-  const { skills, total } = await getUserSkills(
-    page as number,
-    record as number
-  );
+  const { skills, total } = await getUserSkills(page, record);
 
   return (
     <HomePanel className={`flex flex-col h-full`}>
@@ -77,7 +74,12 @@ const RecentSkillsPanel = async ({
       <div id="skillsContainer" className="flex-1 overflow-y-auto px-4">
         <SkillsList skills={skills} />
       </div>
-      <Pagination pageParam={page || 1} total={total} record={record} />
+      <Pagination
+        pageParam={page || 0}
+        total={total}
+        record={record}
+        query="page"
+      />
     </HomePanel>
   );
 };

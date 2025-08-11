@@ -31,7 +31,7 @@ export const getUserSkills = async (page = 0, records = 5) => {
 });
 
 
-
+  
     return {skills, total } ;
 }
 

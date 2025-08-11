@@ -4,12 +4,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 const Pagination = ({
-  pageParam = 1,
+  pageParam = 0,
+  query = 'page',
   total,
   record = 5,
 }: {
   pageParam: number;
   total: number;
+  query: string;
   record: number;
 }) => {
   const [page, setPage] = useState(pageParam);
@@ -29,7 +31,7 @@ const Pagination = ({
 
   const setPageURLParam = (value: number) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
-    current.set('page', String(value));
+    current.set(query, String(value));
     router.push(`?${current.toString()}`);
     router.refresh();
   };
@@ -44,7 +46,7 @@ const Pagination = ({
           Previous
         </button>
         <span className="text-gray-300">
-          Page {page} of {Math.ceil(total / record)}
+          Page {page + 1} of {Math.ceil(total / record)}
         </span>
         <button
           className="bg-gray-700 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
